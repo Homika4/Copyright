@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gallery</title>
+    <style>
+        .rename-form {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>Uploaded Images</h2>
+    {% if images %}
+        <ul>
+        {% for image in images %}
+            <li>
+                <!-- Lien vers l'image -->
+                <a href="{{ url_for('static', filename='uploads/' + image) }}" target="_blank">{{ image }}</a>
+
+                <!-- Formulaire pour renommer l'image (initialement masqué) -->
+                <form action="{{ url_for('rename_file', filename=image) }}" method="POST" style="display:none;" id="rename-form-{{ image }}">
+                    <input type="text" name="new_name" placeholder="New name" required>
+                    <button type="submit">Rename</button>
+                </form>
+
+                <!-- Formulaire pour supprimer l'image -->
+                <form action="{{ url_for('delete_file', filename=image) }}" method="POST" style="display:inline;">
+                    <button type="submit">Delete</button>
+                </form>
+
+                <!-- Bouton pour afficher le formulaire de renommage -->
+                <button onclick="toggleRenameForm('{{ image }}')" class="rename-button" id="rename-button-{{ image }}">Rename</button>
+                <br>
+                <img src="{{ url_for('static', filename='uploads/' + image) }}" alt="{{ image }}" width="200">
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No images uploaded yet.</p>
+    {% endif %}
+    <br>
+    <a href="{{ url_for('index') }}">Go back to upload</a>
+
+    <script>
+        function toggleRenameForm(image) {
+            // Cacher tous les autres formulaires de renommage
+            var allForms = document.querySelectorAll('.rename-form');
+            allForms.forEach(function(form) {
+                form.style.display = 'none';
+            });
+
+            // Cacher tous les autres boutons de renommage
+            var allButtons = document.querySelectorAll('.rename-button');
+            allButtons.forEach(function(button) {
+                button.style.display = 'inline';
+            });
+
+            // Cacher le bouton actuel
+            var button = document.getElementById('rename-button-' + image);
+            button.style.display = 'none';
+
+            // Afficher le formulaire de renommage de l'image spécifique
+            var form = document.getElementById('rename-form-' + image);
+            form.style.display = form.style.display === 'inline' ? 'none' : 'inline';
+        }
+    </script>
+</body>
+</html>
